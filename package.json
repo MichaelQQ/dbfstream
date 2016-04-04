@@ -1,0 +1,23 @@
+{
+  "name": "dbfstream",
+  "version": "1.0.0",
+  "description": "a dbf parser - stream version (based on https://github.com/tamtakoe/node-dbf)",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MichaelQQ/dbfstream.git"
+  },
+  "keywords": [
+    "dbf",
+    "stream"
+  ],
+  "author": "MichaelQQ",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/MichaelQQ/dbfstream/issues"
+  },
+  "homepage": "https://github.com/MichaelQQ/dbfstream#readme"
+}
