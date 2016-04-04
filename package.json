@@ -19,5 +19,8 @@
   "bugs": {
     "url": "https://github.com/MichaelQQ/dbfstream/issues"
   },
-  "homepage": "https://github.com/MichaelQQ/dbfstream#readme"
+  "homepage": "https://github.com/MichaelQQ/dbfstream#readme",
+  "dependencies": {
+    "iconv-lite": "^0.4.13"
+  }
 }
