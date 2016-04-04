@@ -95,6 +95,11 @@ const DBFStream = function (path, encoding) {
 
       readStream.removeListener('readable', onData);
     });
+
+    readStream.on('end', function onEnd() {
+      stream.push(null);
+      readStream.removeListener('end', onEnd);
+    });
   };
 
   return stream;
