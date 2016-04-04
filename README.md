@@ -1,3 +1,5 @@
+[![npm version](https://badge.fury.io/js/dbfstream.svg)](https://badge.fury.io/js/dbfstream) [![NPM Downloads](https://img.shields.io/npm/dt/dbfstream.svg)](https://www.npmjs.com/package/dbfstream)
+
 DBFStream
 ===
 This is a stream base .dbf Parser
@@ -26,12 +28,12 @@ dbf.on('header', header => {
 ###get dbf file data:
 
 ```js
-stream.on('readable', () => {
+dbf.on('readable', () => {
   console.log(stream.read());
 });
 
 //or flowing mode
-stream.on('data', (data) => {
+dbf.on('data', (data) => {
     console.log(data);
 });
 ```
@@ -39,7 +41,7 @@ stream.on('data', (data) => {
 ###dbf file stream end:
 
 ```js
-stream.on('end', () => {
+dbf.on('end', () => {
     console.log('stream end');
 });
 ```
