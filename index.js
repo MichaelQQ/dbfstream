@@ -1,5 +1,6 @@
 const fs = require('fs');
 const iconv = require('iconv-lite');
+const EventEmitter = require('events').EventEmitter;
 const Readable = require('stream').Readable;
 
 const parseDate = function (buffer) {
@@ -71,6 +72,7 @@ const DBFStream = function (path, encoding) {
   var opt = {
     objectMode: true,
   };
+  util.inherits(Readable, EventEmitter);
   var stream = new Readable(opt);
   var readStream = fs.createReadStream(path);
 
@@ -84,6 +86,7 @@ const DBFStream = function (path, encoding) {
   //read Descriptor Array
   readStream.once('readable', function onDescriptorArray() {
     stream.fileInfo.feilds = readDescriptorArray(readStream, stream.fileInfo.start);
+    stream.emit('header', stream.fileInfo);
   });
 
   stream._read = () => {
