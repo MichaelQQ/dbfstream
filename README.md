@@ -3,9 +3,9 @@ DBFStream
 This is a stream base .dbf Parser
 Based on https://github.com/tamtakoe/node-dbf
 
-Usage
----
-***creat dbf stream: ***
+#Usage
+
+###creat dbf stream:
 
 `const dbf = dbfstream(dbf file path, encoding);`
 
@@ -15,7 +15,7 @@ const dbfstream = require('dbfstream');
 var dbf = dbfstream('./test.dbf', 'utf-8');
 ```
 
-***get dbf file header: ***
+###get dbf file header:
 
 ```js
 dbf.on('header', header => {
@@ -23,7 +23,7 @@ dbf.on('header', header => {
 });
 ```
 
-***get dbf file data: ***
+###get dbf file data:
 
 ```js
 stream.on('readable', () => {
@@ -36,7 +36,7 @@ stream.on('data', (data) => {
 });
 ```
 
-***dbf file stream end: ***
+###dbf file stream end:
 
 ```js
 stream.on('end', () => {
