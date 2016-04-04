@@ -1,6 +1,6 @@
 {
   "name": "dbfstream",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "a dbf parser - stream version (based on https://github.com/tamtakoe/node-dbf)",
   "main": "index.js",
   "scripts": {
