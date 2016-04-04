@@ -1,5 +1,6 @@
 const fs = require('fs');
 const iconv = require('iconv-lite');
+const util = require('util');
 const EventEmitter = require('events').EventEmitter;
 const Readable = require('stream').Readable;
 
