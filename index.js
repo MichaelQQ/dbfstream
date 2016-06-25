@@ -4,97 +4,135 @@ const util = require('util');
 const EventEmitter = require('events').EventEmitter;
 const Readable = require('stream').Readable;
 
-const parseDate = function (buffer) {
-  const year  = buffer.slice(0, 1).readInt32LE(0, true) + 1900;
-  const month = buffer.slice(1, 2).readInt32LE(0, true) - 1;
-  const day   = buffer.slice(2, 3).readInt32LE(0, true);
-  return new Date(year, month, day);
+const fileTypes = {
+  2: 'FoxBASE',
+  3: 'FoxBASE+/Dbase III plus, no memo',
+  48: 'Visual FoxPro',
+  49: 'Visual FoxPro, autoincrement enabled',
+  50: 'Visual FoxPro with field type Varchar or Varbinary',
+  67: 'dBASE IV SQL table files, no memo',
+  99: 'dBASE IV SQL system files, no memo',
+  131: 'FoxBASE+/dBASE III PLUS, with memo',
+  139: 'dBASE IV with memo',
+  203: 'dBASE IV SQL table files, with memo',
+  245: 'FoxPro 2.x (or earlier) with memo',
+  229: 'HiPer-Six format with SMT memo file',
+  251: 'FoxBASE',
 };
 
-const parseFeildHeader = function (buffer) {
-  const header = {
-    name: buffer.slice(0, 11).toString('utf-8').replace(/[\u0000]+$/, ''),
-    type: buffer.slice(11, 12).toString('utf-8'),
-    displacement: buffer.slice(12, 16).readInt32LE(0, true),
-    length: buffer.slice(16, 17).readInt32LE(0, true),
-    decimalPlaces: buffer.slice(17, 18).readInt32LE(0, true),
-  };
-  return header;
-};
+const parseFileType = (buffer) => fileTypes[buffer.readUInt8(0, true)]
+  ? fileTypes[buffer.readUInt8(0, true)]
+  : 'uknown';
 
-const readFileHeader = (readStream) => {
+const parseDate = (buffer) => new Date(
+  buffer.slice(0, 1).readUInt8(0, true) + 1900, // year
+  buffer.slice(1, 2).readUInt8(0, true) - 1,  // month
+  buffer.slice(2, 3).readUInt8(0, true) // date
+);
+
+// 12 – 27: Reserved
+// 28: Table flags
+// 29: Code page mark
+// 30 - 31: Reserved, contains 0x00
+const getHeader = (readStream) => {
   const buffer = readStream.read(32);
-  var fileInfo = {};
-
-  fileInfo.type = buffer.slice(0, 1).toString('utf-8');
-  fileInfo.dateUpdated = parseDate(buffer.slice(1, 4));
-  fileInfo.numberOfRecords = buffer.slice(4, 8).readInt32LE(0, true);
-  fileInfo.start = buffer.slice(8, 10).readInt32LE(0, true);
-  fileInfo.recordLength = buffer.slice(10, 12).readInt32LE(0, true);
-
-  return fileInfo;
-};
-
-const readDescriptorArray = (readStream, start, feilds) => {
-  const buffer = readStream.read(start - 32);
-  var feilds = [];
-
-  for (var i = 0, len = buffer.length; i < len; i += 32) {
-    feilds.push(parseFeildHeader(buffer.slice(i, i + 32)));
-  }
-
-  return feilds;
-};
-
-const parseDataByType = (data, type) => {
-  const result = {
-    C: data,
-    N: +data,
-    L: data.toLowerCase() === 't',
+  return {
+    type: parseFileType(buffer.slice(0, 1)),
+    dateUpdated: parseDate(buffer.slice(1, 4)),
+    numberOfRecords: buffer.slice(4, 8).readInt32LE(0, true),
+    bytesOfHeader: buffer.slice(8, 10).readInt32LE(0, true),
+    LengthPerRecord: buffer.slice(10, 12).readInt32LE(0, true),
   };
-  return result[type];
 };
 
-const convertToObject = (data, feilds, encoding) => {
-  var row = {};
+// 19 - 22	Value of autoincrement Next value
+// 23	Value of autoincrement Step value
+// 24 – 31	Reserved
+const getField = (buffer) => (
+  buffer.length < 32
+    ? undefined
+    : {
+      name: buffer.slice(0, 11).toString('utf-8').replace(/[\u0000]+$/, ''),
+      type: buffer.slice(11, 12).toString('utf-8'),
+      displacement: buffer.slice(12, 16).readInt32LE(0, true),
+      length: buffer.slice(16, 17).readInt32LE(0, true),
+      decimalPlaces: buffer.slice(17, 18).readInt32LE(0, true),
+      flag: buffer.slice(18, 19).readUInt8(0, true),
+    }
+);
 
-  row['@deleted'] = data.slice(0, 1)[0] !== 32;
-  feilds.reduce((acc, now) => {
-    var value = iconv.decode(data.slice(acc, acc + now.length), encoding).replace(/^\s+|\s+$/g, '');
+const getListOfFields = (readStream, bytesOfHeader) => {
+  const buffer = readStream.read(bytesOfHeader - 32);
+  const ListOfFields = [];
+
+  for (let i = 0, len = buffer.length; i < len; i += 32) {
+    let field;
+    if (field = getField(buffer.slice(i, i + 32))) {
+      ListOfFields.push(field);
+    }
+  }
+  return ListOfFields;
+};
+
+const dataTypes = {
+  C(data) {
+    return data;
+  },
+  N(data) {
+    return +data;
+  },
+  L(data) {
+    return data.toLowerCase() === 't';
+  },
+};
+
+const parseDataByType = (data, type) => (
+  dataTypes[type]
+    ? dataTypes[type](data)
+    : data  // default
+);
+
+const convertToObject = (data, ListOfFields, encoding, numOfRecord) => {
+  const row = {
+    '@numOfRecord': numOfRecord,
+    '@deleted': data.slice(0, 1)[0] !== 32,
+  };
+
+  ListOfFields.reduce(function (acc, now) {
+    const value = iconv
+      .decode(data.slice(acc, acc + now.length), encoding)
+      .replace(/^\s+|\s+$/g, '');
     row[now.name] = parseDataByType(value, now.type);
-
     return acc + now.length;
   }, 1);
 
   return row;
 };
 
-const DBFStream = function (path, encoding) {
-  var opt = {
-    objectMode: true,
-  };
+const dbfStream = (path, encoding = 'utf-8') => {
+  const opt = { objectMode: true };
   util.inherits(Readable, EventEmitter);
-  var stream = new Readable(opt);
-  var readStream = fs.createReadStream(path);
+  const stream = new Readable(opt);
+  const readStream = fs.createReadStream(path);
 
-  encoding = encoding || 'utf-8';
   readStream._maxListeners = Infinity;
   //read file header first
-  readStream.once('readable', function onFileHeader() {
-    stream.fileInfo = readFileHeader(readStream);
+  readStream.once('readable', () => {
+    stream.header = getHeader(readStream);
   });
 
   //read Descriptor Array
-  readStream.once('readable', function onDescriptorArray() {
-    stream.fileInfo.feilds = readDescriptorArray(readStream, stream.fileInfo.start);
-    stream.emit('header', stream.fileInfo);
+  readStream.once('readable', () => {
+    stream.header.listOfFileds = getListOfFields(readStream, stream.header.bytesOfHeader);
+    stream.emit('header', stream.header);
   });
 
+  let numOfRecord = 1;   //row number numOfRecord
   stream._read = () => {
     readStream.on('readable', function onData() {
-      var chunk;
-      while (null !== (chunk = readStream.read(stream.fileInfo.recordLength))) {
-        stream.push(convertToObject(chunk, stream.fileInfo.feilds, encoding));
+      let chunk;
+      while (null !== (chunk = readStream.read(stream.header.LengthPerRecord))) {
+        stream.push(convertToObject(chunk, stream.header.listOfFileds, encoding, numOfRecord++));
       }
 
       readStream.removeListener('readable', onData);
@@ -109,4 +147,4 @@ const DBFStream = function (path, encoding) {
   return stream;
 };
 
-module.exports = DBFStream;
+module.exports = dbfStream;
