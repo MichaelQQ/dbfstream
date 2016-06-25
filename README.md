@@ -1,4 +1,4 @@
-[![npm version](https://badge.fury.io/js/dbfstream.svg)](https://badge.fury.io/js/dbfstream) [![NPM Downloads](https://img.shields.io/npm/dt/dbfstream.svg)](https://www.npmjs.com/package/dbfstream)
+[![Build Status](https://travis-ci.org/MichaelQQ/dbfstream.svg)](https://travis-ci.org/MichaelQQ/dbfstream) [![npm version](https://badge.fury.io/js/dbfstream.svg)](https://badge.fury.io/js/dbfstream) [![NPM Downloads](https://img.shields.io/npm/dt/dbfstream.svg)](https://www.npmjs.com/package/dbfstream)
 
 DBFStream
 ===

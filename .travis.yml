@@ -1,0 +1,14 @@
+deploy:
+  provider: npm
+  email: mr.tu@michaelqq.com
+  api_key:
+    secure: vzhU6B0aIuBKuprMBFgfQRCX5HSQi3mba/kiqt5AfAcb8boRLHryMVB4miiTDN8OjcWhgj4qZ5GiqA0USirdCfOzoIJ/BZkB493MDsnMHvS9MRLmYUKKf9tkM71zV3lVbLSE/FL6k3IuLlgHJPwz7sg6TVx3gI3fplBje5bJ7F8gQGNWJrvOIxPXsCdmRg1gcIGdSsMexvm7/FEKa6wWPVIfxAUghdZDrKiFbFcMH5KWuNqEAnbfeWF8X10fEPf4qxk9DqJO0toQkNzf99pGufV/SkDrzgCxx2WG7vOpjIuHvDBfjTH2YwEWTA6fmadWqFCbV4LZh4Pjg06oPrXgsCup0nQEvqqmPvtHpR6tzLvgakKs8kU6cuSiReS+i8Tz/GxFzo5YBqMkKlNsTNS3kzX1yM1IyKZivJFeF5zazqS8BjyxopW8YMsJO+rWO5D6LuvgEXa+JtoSD1lbDrdzTZkTbU071gXt5a10TNnsDZpTHV5LBBH/KOwoPoc08Nq5Sjt9hqM/iMA9UtdZ/QfRPbXX9RlOKKG5JUUWNTnJGRJHpDuel3Wv3l6xuzp/2a5H7YSYyamAEhcaMdfEUoa1m/Gx82SWKVxc38SHmRwJugXd/TmwEUYyKTR5nBKwP6QTGaJe22pWl9c6odJr0QucrHwyjkng967n0KRq8fI5geg=
+  on:
+    tags: true
+    repo: MichaelQQ/dbfstream
+language: node_js
+node_js:
+  - '6'
+cache:
+  directories:
+    - node_modules
