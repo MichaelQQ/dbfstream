@@ -123,7 +123,7 @@ const dbfStream = (path, encoding = 'utf-8') => {
 
   //read Descriptor Array
   readStream.once('readable', () => {
-    stream.header.listOfFileds = getListOfFields(readStream, stream.header.bytesOfHeader);
+    stream.header.listOfFields = getListOfFields(readStream, stream.header.bytesOfHeader);
     stream.emit('header', stream.header);
   });
 
@@ -132,7 +132,7 @@ const dbfStream = (path, encoding = 'utf-8') => {
     readStream.on('readable', function onData() {
       let chunk;
       while (null !== (chunk = readStream.read(stream.header.LengthPerRecord))) {
-        stream.push(convertToObject(chunk, stream.header.listOfFileds, encoding, numOfRecord++));
+        stream.push(convertToObject(chunk, stream.header.listOfFields, encoding, numOfRecord++));
       }
 
       readStream.removeListener('readable', onData);
