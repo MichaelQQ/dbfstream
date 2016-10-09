@@ -13,7 +13,7 @@ const testDbfstrea = t => {
     numberOfRecords: 5,
     bytesOfHeader: 129,
     LengthPerRecord: 26,
-    listOfFileds:
+    listOfFields:
      [
        {
          name: 'NAME',
