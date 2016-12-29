@@ -126,7 +126,9 @@ const dbfStream = (path, encoding = 'utf-8') => {
     stream.header.listOfFields = getListOfFields(readStream, stream.header.bytesOfHeader);
     stream.emit('header', stream.header);
   });
-
+  
+  readStream.once('end', () => stream.push(null));
+  
   let numOfRecord = 1;   //row number numOfRecord
   stream._read = () => {
     readStream.on('readable', function onData() {
@@ -136,11 +138,6 @@ const dbfStream = (path, encoding = 'utf-8') => {
       }
 
       readStream.removeListener('readable', onData);
-    });
-
-    readStream.on('end', function onEnd() {
-      stream.push(null);
-      readStream.removeListener('end', onEnd);
     });
   };
 
