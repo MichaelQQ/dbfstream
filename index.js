@@ -3,6 +3,7 @@ const iconv = require('iconv-lite');
 const util = require('util');
 const EventEmitter = require('events').EventEmitter;
 const Readable = require('stream').Readable;
+const isStream = require('is-stream');
 
 const fileTypes = {
   2: 'FoxBASE',
@@ -109,11 +110,13 @@ const convertToObject = (data, ListOfFields, encoding, numOfRecord) => {
   return row;
 };
 
-const dbfStream = (path, encoding = 'utf-8') => {
+const dbfStream = (source, encoding = 'utf-8') => {
   const opt = { objectMode: true };
   util.inherits(Readable, EventEmitter);
   const stream = new Readable(opt);
-  const readStream = fs.createReadStream(path);
+
+  // if source is already a readableStream, use it, otherwise treat as a filename
+  const readStream = isStream.readable(source) ? source : fs.createReadStream(source);
 
   readStream._maxListeners = Infinity;
   //read file header first
