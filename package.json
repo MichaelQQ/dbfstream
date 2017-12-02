@@ -21,7 +21,8 @@
   },
   "homepage": "https://github.com/MichaelQQ/dbfstream#readme",
   "dependencies": {
-    "iconv-lite": "^0.4.13"
+    "iconv-lite": "^0.4.13",
+    "is-stream": "^1.1.0"
   },
   "devDependencies": {
     "babel-tape-runner": "^2.0.1",
