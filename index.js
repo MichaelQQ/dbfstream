@@ -38,6 +38,9 @@ const parseDate = (buffer) => new Date(
 const getHeader = (readStream) => {
   const buffer = readStream.read(32);
 
+  if (!buffer) {
+    throw `Unable to parse first 32 bytes from null header`;
+  }
   if (buffer.length < 32) {
     throw `Unable to parse first 32 bytes from header, found ${buffer.length} byte(s)`;
   }

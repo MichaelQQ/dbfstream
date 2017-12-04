@@ -187,6 +187,27 @@ test('injected stream should be considered a data source', t => {
 
 test('insufficient header bytes should emit error', t => {
   // use t.plan to show that the errors were actually emitted and handled
+  t.plan(1);
+
+  const readableStream = new Duplex();
+  readableStream.push(null);
+
+  const dbf = dbfstream(readableStream, 'utf-8');
+
+  dbf.on('error', err => {
+    t.equals(err, `Unable to parse first 32 bytes from null header`);
+  });
+  dbf.on('header', actualHeader => {
+    t.fail('no header should have been returned');
+  });
+  dbf.on('data', data => {
+    t.fail('no record should have been found');
+  });
+
+});
+
+test('insufficient header bytes should emit error', t => {
+  // use t.plan to show that the errors were actually emitted and handled
   t.plan(2);
 
   // min and max number of bytes for invalid header
