@@ -37,6 +37,11 @@ const parseDate = (buffer) => new Date(
 // 30 - 31: Reserved, contains 0x00
 const getHeader = (readStream) => {
   const buffer = readStream.read(32);
+
+  if (buffer.length < 32) {
+    throw `Unable to parse first 32 bytes from header, found ${buffer.length} byte(s)`;
+  }
+
   return {
     type: parseFileType(buffer.slice(0, 1)),
     dateUpdated: parseDate(buffer.slice(1, 4)),
@@ -121,17 +126,18 @@ const dbfStream = (source, encoding = 'utf-8') => {
   readStream._maxListeners = Infinity;
   //read file header first
   readStream.once('readable', () => {
-    stream.header = getHeader(readStream);
+    try {
+      stream.header = getHeader(readStream);
+      stream.header.listOfFields = getListOfFields(readStream, stream.header.bytesOfHeader);
+      stream.emit('header', stream.header);
+    }
+    catch (err) {
+      stream.emit('error', err);
+    }
   });
 
-  //read Descriptor Array
-  readStream.once('readable', () => {
-    stream.header.listOfFields = getListOfFields(readStream, stream.header.bytesOfHeader);
-    stream.emit('header', stream.header);
-  });
-  
   readStream.once('end', () => stream.push(null));
-  
+
   let numOfRecord = 1;   //row number numOfRecord
   stream._read = () => {
     readStream.on('readable', function onData() {
