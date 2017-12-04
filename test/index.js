@@ -3,7 +3,6 @@ const test = require('tape').test;
 const deepFreeze = require('deep-freeze');
 const fs = require('fs');
 const Duplex = require('stream').Duplex;
-const Writable = require('stream').Writable;
 
 const testDbfstrea = t => {
   const dbf = dbfstream(__dirname + '/test.dbf', 'utf-8');
