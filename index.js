@@ -137,16 +137,20 @@ const dbfStream = (source, encoding = 'utf-8') => {
     catch (err) {
       stream.emit('error', err);
     }
+
   });
 
   readStream.once('end', () => stream.push(null));
 
   let numOfRecord = 1;   //row number numOfRecord
+
   stream._read = () => {
     readStream.on('readable', function onData() {
-      let chunk;
-      while (null !== (chunk = readStream.read(stream.header.LengthPerRecord))) {
-        stream.push(convertToObject(chunk, stream.header.listOfFields, encoding, numOfRecord++));
+      if (stream.header) {
+        let chunk;
+        while (null !== (chunk = readStream.read(stream.header.LengthPerRecord))) {
+          stream.push(convertToObject(chunk, stream.header.listOfFields, encoding, numOfRecord++));
+        }
       }
 
       readStream.removeListener('readable', onData);
