@@ -26,9 +26,9 @@ const parseFileType = (buffer) => fileTypes[buffer.readUInt8(0, true)]
   : 'uknown';
 
 const parseDate = (buffer) => new Date(
-  buffer.slice(0, 1).readUInt8(0, true) + 1900, // year
-  buffer.slice(1, 2).readUInt8(0, true) - 1,  // month
-  buffer.slice(2, 3).readUInt8(0, true) // date
+  buffer.readUInt8(0, true) + 1900, // year
+  buffer.readUInt8(1, true) - 1,  // month
+  buffer.readUInt8(2, true) // date
 );
 
 // 12 – 27: Reserved
@@ -38,11 +38,11 @@ const parseDate = (buffer) => new Date(
 const getHeader = (readStream) => {
   const buffer = readStream.read(32);
   return {
-    type: parseFileType(buffer.slice(0, 1)),
+    type: parseFileType(buffer),
     dateUpdated: parseDate(buffer.slice(1, 4)),
-    numberOfRecords: buffer.slice(4, 8).readInt32LE(0, true),
-    bytesOfHeader: buffer.slice(8, 10).readInt32LE(0, true),
-    LengthPerRecord: buffer.slice(10, 12).readInt32LE(0, true),
+    numberOfRecords: buffer.readInt32LE(4, true),
+    bytesOfHeader: buffer.readInt16LE(8, true),
+    LengthPerRecord: buffer.readInt16LE(10, true),
   };
 };
 
@@ -53,12 +53,12 @@ const getField = (buffer) => (
   buffer.length < 32
     ? undefined
     : {
-      name: buffer.slice(0, 11).toString('utf-8').replace(/[\u0000]+$/, ''),
-      type: buffer.slice(11, 12).toString('utf-8'),
-      displacement: buffer.slice(12, 16).readInt32LE(0, true),
-      length: buffer.slice(16, 17).readInt32LE(0, true),
-      decimalPlaces: buffer.slice(17, 18).readInt32LE(0, true),
-      flag: buffer.slice(18, 19).readUInt8(0, true),
+      name: buffer.toString('utf-8', 0, 11).replace(/[\u0000]+$/, ''),
+      type: buffer.toString('utf-8', 11, 12),
+      displacement: buffer.readInt32LE(12, true),
+      length: buffer.readUInt8(16, true),
+      decimalPlaces: buffer.readUInt8(17, true),
+      flag: buffer.readUInt8(18, true),
     }
 );
 
