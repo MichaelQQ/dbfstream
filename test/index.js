@@ -190,8 +190,6 @@ test('insufficient header bytes should emit error', t => {
   t.plan(1);
 
   const readableStream = new Duplex();
-  readableStream.push(null);
-
   const dbf = dbfstream(readableStream, 'utf-8');
 
   dbf.on('error', err => {
@@ -203,7 +201,7 @@ test('insufficient header bytes should emit error', t => {
   dbf.on('data', data => {
     t.fail('no record should have been found');
   });
-
+  readableStream.push(null);
 });
 
 test('insufficient header bytes should emit error', t => {
