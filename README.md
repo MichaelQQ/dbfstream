@@ -41,6 +41,16 @@ dbf.on('data', (data) => {
 });
 ```
 
+### get dbf file error
+
+```js
+dbf.on('error', (err) => {
+  console.log(err);
+});
+```
+
+* Due to how the parser is written, currently the only condition that emits an error is insufficient bytes in the header.  
+
 ### dbf file stream end:
 
 ```js
