@@ -1,8 +1,8 @@
 language: node_js
-node_js: 
-  - 6
-  - 8
-  - 10
+node_js:
+- 6
+- 8
+- 10
 cache:
   directories:
   - node_modules
@@ -10,7 +10,7 @@ deploy:
   provider: npm
   email: mr.tu@michaelqq.com
   api_key:
-    secure: HP8Qu5XPEsbvLaHK5RIbzGKyVZTBaS6ttdDt7oZWzrEZ3izW7Ky5Vq56OeK+4C+H4BYNrTouzde6n3hoBEpf2jGQJw62DRthBbWBqTmDaPh8aCvovBXgMf2Vst8JwmdG64SxOkquWlmpLYuucH4ky5l+FGlAT4JjE6u6G51cvC9oo8aD05QQf0J8latvJjROteVN62AJfgO9QSNxVPjTnUAaWX3r0jKQgTK26prYX0aLBccWJptHLCzbU6mlwGJr1zR7RxFa8qtqfOw3n49cxeZfCL2NJI4xBRbZNEnhL+xEtYQUltKYifMetwQ/XqxXeIVWP9ZdEKLt2/YAh1Hrh3n3PuGyvOIn5Serw2Jtj0ENOh2GNQm/hfK3l5wd2KrszLfUQalkQ60q8NsgGw68k2p3DjQNukS20qrBhe78jMvOwHiyuBI/PO1aE1zkbLwAIv5Y9ePcjzj64QGVDJyKvBkJExkTXvfTECnIi4Sjbmrgez4QawYB/KfxAnKiMpjtKRdXg3jyg2acT6j9/e/gvNiTjI5FCKOGIZ3iazBPUUYEVTlZuIM5VuZbnbJ4t4H9Cf0Jaf3A73UEig00Vdj50EB4ka7e2cBsXXrfU+tukqmKmU8HJR8lI+2yvIit9/pMr+J1qlY8yRn50LPKxj0vTJNxqoe+3tZEafqwefdPcLU=
+    secure: v/E5CMuyiGlW4Th3eAsmlLrPtX74xH8ckJi/DHT2Hb/Yf6DAp0yYYNH0OgrkNn7vE7yt10sdbsp2xyGlPsDfhZD2oSvFQIBk8ws7DN7bWljCMqamQ8ItR945HNK/GHywEirNixxhTNBZDqxcCtrEol+msOJiSgQvAdQWqRsXRN9JmxSMpnJSdd0O0qZu8poI0DXxcdmKAQhBk698ptIPOaL5Crdn6vCa2JWKMFpmZbrQ2P32T+sreKEM2N2dTODaOgQB6wSIIbF0F3ns2LSMipmzMTgSaT1ieX7pvZ/pfJIcvB8l/eZtN8YZ3EWSs16FszbDksaFnrccv/VirLCnEDUxMPafI6yJgaScrMo2kLY4oop+gEvzEPHGWa+b+fp7EMF7Z+1UNsNX80fptLz3W4vrwjWmTxtB97JmigPxLR/ywodF6jINNtuA+VYvibNxTf2f+ZJ70GLbp+92cAaxljp7xgnkgyvyqVm/M5ZvEBj4XuCU48N+ztTrqnf51xcRtIqcORNbG2HpygrGMwz9GpIEWl0vcBKj0Bu77ZnSccH5XmQuuvZ13mjaturz+zUfYxXJkt98nS7+hxGrL9yaWYk8HBJKlvipuFkAxm93UDrVdkPsXIHQpoWiAM/A/+J1X6YpzNUzE8P1IqD0ScWUWr3G1OJbwZUU5kst9/9RKuo=
   on:
     tags: true
     repo: MichaelQQ/dbfstream
