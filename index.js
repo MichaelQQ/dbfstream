@@ -118,42 +118,57 @@ const convertToObject = (data, ListOfFields, encoding, numOfRecord) => {
   return row;
 };
 
+const readHeader = ({ stream, readStream, currentState }) => {
+  try {
+    stream.header = getHeader(readStream);
+    stream.header.listOfFields = getListOfFields(readStream, stream.header.bytesOfHeader);
+    stream.emit('header', stream.header);
+    return 1
+  }
+  catch (err) {
+    stream.emit('error', err);
+  }
+}
+
+const readData = ({ stream, readStream, encoding }) => {
+  if (stream.header) {
+    let chunk;
+    let numOfRecord = 1;   //row number numOfRecord
+    while (null !== (chunk = readStream.read(stream.header.LengthPerRecord))) {
+      stream.push(convertToObject(chunk, stream.header.listOfFields, encoding, numOfRecord++));
+    }
+  }
+  return 0;
+}
+
 const dbfStream = (source, encoding = 'utf-8') => {
-  const opt = { objectMode: true };
   util.inherits(Readable, EventEmitter);
-  const stream = new Readable(opt);
+  const stream = new Readable({ objectMode: true });
+  const state = { 
+    READ_HEADER: 0,
+    READ_DATA: 1
+  }
+  const stateHandler = [
+    readHeader,
+    readData
+  ]
+  let currentState = state.READ_HEADER
 
   // if source is already a readableStream, use it, otherwise treat as a filename
   const readStream = isStream.readable(source) ? source : fs.createReadStream(source);
 
   readStream._maxListeners = Infinity;
-  //read file header first
-  readStream.once('readable', () => {
-    try {
-      stream.header = getHeader(readStream);
-      stream.header.listOfFields = getListOfFields(readStream, stream.header.bytesOfHeader);
-      stream.emit('header', stream.header);
-    }
-    catch (err) {
-      stream.emit('error', err);
-    }
-
-  });
-
-  readStream.once('end', () => stream.push(null));
-
-  let numOfRecord = 1;   //row number numOfRecord
+  
+  readStream.on('end', () => stream.push(null));
 
   stream._read = () => {
-    readStream.on('readable', function onData() {
-      if (stream.header) {
-        let chunk;
-        while (null !== (chunk = readStream.read(stream.header.LengthPerRecord))) {
-          stream.push(convertToObject(chunk, stream.header.listOfFields, encoding, numOfRecord++));
-        }
-      }
-
-      readStream.removeListener('readable', onData);
+    readStream.on('readable', () => {
+      currentState = stateHandler[currentState]({
+        stream,
+        readStream,
+        currentState,
+        encoding
+      })
     });
   };
 
