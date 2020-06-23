@@ -126,7 +126,7 @@ const dbfStream = (source, encoding = 'utf-8') => {
   let numOfRecord = 1;   //row number numOfRecord
 
   const onData = () => {
-    if (stream.header) {
+    if (stream.header && stream.header.listOfFields) {
       let chunk;
       while (null !== (chunk = readStream.read(stream.header.LengthPerRecord))) {
         stream.push(convertToObject(chunk, stream.header.listOfFields, encoding, numOfRecord++));
@@ -144,6 +144,7 @@ const dbfStream = (source, encoding = 'utf-8') => {
     }
     catch (err) {
       stream.emit('error', err);
+      stream.push(null);
     }
   });
 
