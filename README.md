@@ -58,3 +58,6 @@ dbf.on('end', () => {
     console.log('stream end');
 });
 ```
+
+# Donate
+[![Donate](https://raw.githubusercontent.com/MichaelQQ/blog/gh-pages/public/images/donate.png)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=XEMLLZVXT2RC6)
