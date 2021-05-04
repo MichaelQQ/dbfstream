@@ -129,6 +129,7 @@ const dbfStream = (source, encoding = 'utf-8') => {
     if (stream.header && stream.header.listOfFields) {
       let chunk;
       while (null !== (chunk = readStream.read(stream.header.LengthPerRecord))) {
+        if (chunk.length === 1 && chunk[0] === 0x1a) continue
         stream.push(convertToObject(chunk, stream.header.listOfFields, encoding, numOfRecord++));
       }
     }
